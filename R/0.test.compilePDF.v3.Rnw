@@ -1,0 +1,772 @@
+\documentclass[landscape]{article}
+%\usepackage[left=2cm,top=1cm,right=3cm,nohead,nofoot]{geometry}
+%\usepackage[doublespacing]{setspace}
+%\setkeys{Gin}{width=\linewidth,height=\textheight,keepaspectratio}
+\usepackage{setspace,relsize}
+\usepackage[left=2cm,top=1cm,right=3cm,nohead,nofoot]{geometry}
+\usepackage[pdftex]{lscape}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{subfig}
+
+\begin{document}
+
+<<echo=FALSE, results='hide', warning=FALSE, comment=NA,message=FALSE>>=
+
+#source("C:/Users/qianj/OneDrive/temp8/paper/to ppm 08262016 3rd version/TO Nature SR 10112016/response 12202016/from Heidi/sweav file and dataset/R_manuscript_v2.R")
+
+#source("e:/OneDrive/temp8/paper/to ppm 08262016 3rd version/TO Nature SR 10112016/response 12202016/from Heidi/sweav file and dataset/R_manuscript_v2.R")
+
+#source("E:/hubic/Documents/about R/about SWEAVE file/from heidi/R_function_general_v1.R")
+
+#source("C:/Users/qianj/hubic/Documents/about R/about PDF/about SWEAVE file/from heidi/R_function_general_v1.R")
+
+#source("e:/hubic/Documents/about R/about PDF/about SWEAVE file/from heidi/R_function_general_v1.R")
+
+#source("c:/users/qianj/hubic/Documents/about R/about PDF/about SWEAVE file/from heidi/R_function_general_v1.R")
+
+#library(Hmisc)
+
+library(rms)
+#library(highr)
+@
+\newpage
+\section{Data Description}
+<<echo=FALSE, out.width='0.5\\linewidth', fig.align='center',comment=NA, results='asis',warning=FALSE>>=
+
+
+#load("casestudy6.RData")
+
+#setwd('e:/hubic/temp/mut.analysis/allefreq raw clonality/AF with coverage from shilin/new analysis/test2/test33 final')
+
+#setwd('c:/users/qianj/hubic/temp/mut.analysis/allefreq raw clonality/AF with coverage from shilin/new analysis/test2/test33 final')
+
+library(maftools)
+
+s = system.file("data", "last.test33.info.touse.v22.RData", package = "luadtarget")
+
+load(s)
+
+#load ("last.test33.info.touse.v22.RData")
+
+# use this one for efigures.
+
+#dim(dt1)
+#dim(info2.heidi)
+
+# clustercnv, using segment_mean without x2
+# clustercnv2, using segment_mean *2= absolute cnv, which I think is correct to use
+# clustercnv2, can not do 4 clusters, and both 2 clusters were exactly same result using PCA, I guess
+#save(dt1,info2.heidi,clustercnv,clustercnv2,file='info2.dt1.RData')
+
+#load('info2.dt1.RData')
+
+#load('info.dt1.RData')
+
+
+# info2.heidi<-infotest
+# dim(info2.heidi)
+
+#save(info2,info2.heidi,info4,info5,infotest,testos,test33,cnv.test2,cnv.test3,info2.gene,info2.gene2,m1.gene234,m2.gene234,fig3c.pathway,file='last.test33.info.touse.v22.RData')
+
+
+#save(temp11,laml.clin,laml.temp1,gene19,laml.t,temp1,temp11,gene22,fig4b.gene7,file='last.test33.mutation.temp11.readyfor.maftools.v2.RData')
+
+#load('last.test33.mutation.temp11.readyfor.maftools.v2.RData') # has both temp1, temp11, laml.t
+
+#dim(info2)
+#colnames(info2)
+data1<-info2[,2:8]
+#dim(data1)
+#View(data1)
+
+  d<-describe(data1)
+
+latex(d,file='', middle.bold=TRUE, digits=3,exclude1=FALSE)
+
+# f<-summary(datain3)
+@
+\newpage
+\section{Data Summary}
+<<echo=FALSE, out.width='0.5\\linewidth', fig.align='center',comment=NA, results='asis',warning=FALSE>>=
+
+f <- summary(Histology ~ . ,continuous=5, method="reverse", test=TRUE,data=data1,overall=FALSE)
+
+ # f <- summary(group ~ . ,continuous=5, method="reverse", test=TRUE,data=datain2,overall=TRUE)
+
+
+latex(f,where="!htbp",file='', middle.bold=TRUE, digits=3,prmsd=TRUE,exclude1=FALSE,lines.page=4000,longtable=TRUE)
+
+
+
+  @
+
+\newpage
+\section{Figure 1A and 1B}
+%<<echo=FALSE, out.width='0.6\\linewidth', fig.align='center', comment=NA, warning=FALSE>>=
+<<echo=FALSE,fig-sub, fig.cap='two plots', fig.subcap=c('A', 'B'), out.width='.49\\linewidth',comment=NA, warning=FALSE>>=
+library(ggplot2)
+
+#test<-info2
+test<-info2[,c('Histology','nonsym')]
+p<-ggplot(test, aes(x=Histology, y=nonsym)) +
+  geom_violin(trim = FALSE,fill='gray')+
+  geom_jitter(position=position_jitter(0.2))
+
+
+p + geom_boxplot(width=0.1)+stat_summary(fun.y="mean",
+                                         geom="point", color="red")+theme_classic()+
+  theme(text = element_text(size=20),
+        axis.text.y = element_text(hjust=1)) +labs(y = "Mutation Burden")
+
+library(VennDiagram)
+#test33 , gene59,silent.r1726.final
+grid.newpage()
+draw.triple.venn(area1 =33, area2 =39 , area3 =54 , n12 = 24, n23 = 35, n13 = 30,
+                 n123 = 22, category = c("AIS", "MIA", "ADC"), lty = "blank", cex=2,
+                 fill = c("skyblue", "pink1", "mediumorchid"))
+
+@
+\newpage
+\section{Figure 1C}
+<<echo=FALSE,out.width='0.8\\linewidth', out.height='0.7\\textheight',fig.align='center', comment=NA, warning=FALSE>>=
+
+# each group color for his
+#fabcolors = RColorBrewer::brewer.pal(n = 3,name = 'Spectral')
+# uset his one for figure 1b
+fabcolors=c("skyblue", "pink1", "mediumorchid")
+names(fabcolors) = c("AIS", "MIA", "t.ADC")
+#names(fabcolors) = c("AIS", "MIA", "ADC")
+fabcolors = list(Histology = fabcolors)
+
+
+
+# color for varaints
+# use this for ADC project
+# USE THIS one for figure 1b
+col=c("#00F5FF" ,"#0000FF", "#A6CEE3", "#000000", "#FB9A99" ,"#E31A1C" ,"#FDBF6F" ,"orange")
+
+names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Multi_Hit', 'Frame_Shift_Ins',
+               'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
+
+oncoplot(maf = laml.t,colors=col,genes=gene22,clinicalFeatures = 'Histology',
+         sortByAnnotation =FALSE, annotationColor = fabcolors,removeNonMutated = FALSE,
+         drawRowBar = FALSE,drawColBar = FALSE,legendFontSize = 10,bgCol = "white")
+
+
+@
+\newpage
+\section{Figure 1D}
+
+<<echo=FALSE, out.width='0.6\\linewidth',fig.align='center', comment=NA, warning=FALSE>>=
+
+test<-info2.heidi
+test$p.group<-test$Histology
+
+d1<-tapply(test$cnv.amp, test$p.group, FUN=sum,na.rm=TRUE)
+d2<-tapply(test$cnv.deletion, test$p.group, FUN=sum,na.rm=TRUE)
+d1<-data.frame(d1)
+d2<-data.frame(d2)
+d12<-cbind(d1,d2)
+colnames(d12)<-c('Amplification','Deletion')
+#View(d12)
+d12<-t(d12)
+d12<-d12[,c(2,3,1)]
+
+library(reshape2)
+datm<-melt(d12)
+library(scales)
+p<-ggplot(datm,aes(x = Var2, y = value,fill = Var1)) +
+  geom_bar(position = "fill",stat = "identity") +
+  # or:
+  # geom_bar(position = position_fill(), stat = "identity")
+  scale_y_continuous(labels = percent_format())
+
+ p+theme(text = element_text(size=15),
+        axis.text.y = element_text(hjust=1)) +labs(y = "Proportion")+
+ labs(x='')
+
+ #chi-squared test for proportions
+#  d12<-t(d12)
+# d12<-data.frame(d12)
+# d12$sum<-d12$Amplification+d12$Deletion
+# d13<-d12[,c(1,3)]
+# prop.test(d13$Amplification,d13$sum)
+
+#Chi-squared Test for Trend in Proportions
+
+# prop.trend.test(d13$Amplification,d13$sum)
+
+ # use this one is better trend test for proportions
+
+#test$p.group<-as.character(test$Histology)
+# test$p.group[test$p.group %in% c("ADC")] <- "tADC"
+# table(test$p.group)
+# d1<-tapply(test$cnv.amp, test$p.group, FUN=sum,na.rm=TRUE)
+# d2<-tapply(test$cnv.deletion, test$p.group, FUN=sum,na.rm=TRUE)
+# dsum<-d1+d2
+# prop.test(d1,dsum)
+# prop.trend.test(d1,dsum)
+
+# # cnv vs mutation siganture
+# d1<-tapply(test$cnv.amp, test$mut.signature, FUN=sum,na.rm=TRUE)
+# d2<-tapply(test$cnv.deletion, test$mut.signature, FUN=sum,na.rm=TRUE)
+#
+# test$p.group<-test$mut.signature
+
+# how ever if use logistic regression to do per sample wilse proportions, the reuslt is no good
+# not really , depends on using glm or lrm?
+test$h.order<-ifelse(test$Histology=='AIS',1,ifelse(test$Histology=='MIA',2,3))
+table(test$h.order)
+
+test$h.order<-as.factor(test$h.order)
+
+fit1.glm <- glm(cbind(cnv.amp,cnv.deletion)~h.order, binomial, data=test)  # p value for trend analysis
+
+fit1.glm <- glm(cbind(cnv.amp,cnv.deletion)~p.group, binomial, data=test) # this one seems worked? why?
+summary(fit1.glm)
+anova(fit1.glm, test='Chi')  # this is just same as prop.test(), and prop.trend.test()
+
+#fit1.glm <- glm(cbind(cnv.amp,cnv.deletion)~p.group+mutation.burden, binomial, data=test) # corrected with mutation burden
+
+#fit1.glm <- glm(cbind(cnv.amp,cnv.deletion)~p.group+kras.sub2, binomial, data=test) #
+
+#fit1.glm <- glm(cbind(cnv.amp,cnv.deletion)~mutation.burden, binomial, data=test) #
+
+# not signficant, including age,gender,
+# mutation signature need to be further tested
+#fit1.glm <- glm(cbind(cnv.amp,cnv.deletion)~Gender, binomial, data=test) #
+
+
+
+# when use lrm, have to transform data format to long format to have 0/1 value for each sample in each group
+# wide to long using reshape2
+# in contrast, glm is more convient, not sure if glm can adjust for cluster?
+# how to trasform the format for lrm to use?
+
+
+# for cluster effect, Heidi used sample as cluster, but I thought Histology three group should be considered as cluster?
+# I might be wrong, because here histology is an independent variable, and can not be used again as cluster,
+# however, when use sample as a cluster, then, the number of cluster would be too much!!!!! i DOUBLT if it is the best way to adjust?
+# so Heidi worried about the bias of patients, right? I felt like here Heidi overdid this, becasue there might not be any cluster effect that were indicated when we collect these samples. otherwise, using number of patients as effect bias, the size would be too big to use.
+
+# first
+# wide to long using reshape2
+test11<-test[,c(1,4,19,25,26)]
+#dim(test11)
+
+test12 <- melt(test11, id.vars = c("sample","Histology",'mut.signature'))
+# head(test12)
+# dim(test12)
+# View(test12)
+
+# then wide to long did it, just need to replicate each row
+
+test13<-test12[!test12$value==0,]
+# dim(test13)
+# View(test13)
+
+df<-test13
+#dim(df)
+
+df2 <- df[rep(row.names(df), df$value), 1:4] # is correct format to use for lrm
+# dim(df2)
+#View(df2)
+
+df2$amp<-ifelse(df2$variable=='cnv.amp',1,0)
+#table(df2$amp)  # now it is ready for lrm
+
+df2$p.group<-as.character(df2$Histology)
+df2$p.group[df2$p.group %in% c("ADC")] <- "tADC"
+#table(df2$p.group)
+
+mylogit <- lrm(amp ~ p.group, data = df2,x=TRUE,y=TRUE)  # got the heidi result
+print(anova(mylogit))  # why sometime it worked?
+print(mylogit)
+
+# consider cluster effect
+#lrm2.rob=robcov(mylogit,cluster=df2$sample)  # too many cluster
+
+lrm2.rob=robcov(mylogit,cluster=df2$mut.signature)  # this one worked very well, using mut.signature as cluster effect
+
+print(anova(lrm2.rob))  # why sometime it worked?
+print(lrm2.rob)
+
+# fit1.glm <- glm(amp~p.group, binomial, data=df2)  # same result as using lrm
+# summary(fit1.glm)
+
+# library(reshape2)
+#double checked, it is correct
+#data.t2<-dcast(df2,Histology~variable)
+# dim(data.t2)
+# View(data.t2)
+
+# CNV vs mutation signatue
+
+#table(test$mut.signature,test$cnv.amp)
+
+
+@
+\newpage
+\section{Figure 2A}
+<<echo=FALSE, out.width='0.6\\linewidth', fig.align='center', comment=NA, warning=FALSE>>=
+
+df <- data.frame(
+  group = c("Signature 6.MMR", "Signautre 4.Smoking", "Signautre 1.Aging",'Signautre 18','Signautre 2.APOBEC'),
+  value = c(59, 11, 17,6,8)
+  )
+
+ bp<- ggplot(df, aes(x="", y=value, fill=group))+
+geom_bar(width = 1, size=1,stat = "identity")
+
+
+
+#fabcolors2=c("dodgerblue" ,"sienna", "darkolivegreen4", "darkorange", "limegreen")
+
+pie <- bp + coord_polar("y", start=0)
+
+ # Use custom color palettes and finetune
+
+pie + scale_fill_manual(values=c("sienna","darkolivegreen4",  "limegreen","dodgerblue" ,"darkorange"))+
+  geom_text(aes(label = percent(value/100)), position = position_stack(vjust = 0.5),size=4)+
+  labs(x = NULL, y = NULL, fill = '',
+         title = "Mutatation Signatures")+
+  theme_classic() +
+  theme(text = element_text(size=15))+
+  theme(axis.line = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          plot.title = element_text(hjust = 0.5, color = "black"))
+
+
+
+@
+\newpage
+\section{Figure 2B}
+<<echo=FALSE, out.width='0.6\\linewidth', fig.align='center', comment=NA, warning=FALSE>>=
+
+testos<-info2
+#dim(testos)
+testos$p.group<-testos$mut.sig.g5.v2
+#table(testos$p.group)
+objNpsurv <- npsurv(formula = Surv(os.years, dead) ~p.group, conf.int=FALSE ,data = testos)
+#fabcolors=c("darkorange" ,"darkolivegreen4", "limegreen", "dodgerblue", "sienna")
+fabcolors2=c("dodgerblue" ,"sienna", "darkolivegreen4", "darkorange", "limegreen")
+
+#survplot(objNpsurv, label.curves=TRUE, col =fabcolors2,lty=1, lwd=3)
+
+# use thi sone first
+plot(objNpsurv, col =fabcolors2, lwd=3, axes=FALSE,mark=3,cex=2,mark.time=TRUE, xlab='Years',ylab='Survival Probability')
+axis(2,col.axis="black", las=2, cex.axis=1.5, tck=-.01,  lwd=3,lwd.ticks = 3)
+axis(1,col.axis="black", las=0, cex.axis=2, tck=-.01,  lwd=3,lwd.ticks = 3)
+
+# p value
+p1<-survdiff(Surv(os.years, dead) ~ p.group, rho=0, data=testos)
+p2<-p1$chisq
+n1<-length(unique(testos$p.group))
+
+p3<-pchisq(p2, df=n1-1, lower.tail=FALSE)
+p3<-round(p3,digits=2)
+
+
+
+# Add a legend
+legend(1, 0.5, legend=c('APOBEC',"MMR", "Aging",'Smoking',"Signature 18"),
+       col=fabcolors2, lty=1, lwd=3,cex=1)
+
+text(x=1.5, y= 0.1, labels=c(paste("P=",p3)))
+
+
+@
+\newpage
+\section{Figure 2C}
+<<echo=FALSE, fig.width=9, fig.height=5,fig.align='center', comment=NA, warning=FALSE>>=
+
+
+#library (gridExtra)
+library("cowplot")
+
+test<-info2.heidi
+
+t1<-table(test$Histology,test$mut.signature)
+t1<-data.frame(t1)
+# dim(t1)
+# View(t1)
+t1$Var1<-as.character(t1$Var1) # very critical ,have to do this first!
+t1$Var1[t1$Var1%in%c('ADC')]<-'t.ADC'
+
+# another way to show
+p<-ggplot(t1,aes(x = Var2, y = Freq,fill = Var1)) +
+  geom_bar(position = "fill",stat = "identity") +
+  # or:
+  # geom_bar(position = position_fill(), stat = "identity")
+  scale_y_continuous(labels = percent_format())
+
+p1<-p+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1)) +labs(y = "Proportion")+
+  labs(x='')
+
+
+# one way to show
+p<-ggplot(t1,aes(x = Var1, y = Freq,fill = Var2)) +
+  geom_bar(position = "fill",stat = "identity") +
+  scale_fill_manual(values=c("dodgerblue","sienna","darkolivegreen4",  "darkorange", "limegreen"))+
+  # or:
+  # geom_bar(position = position_fill(), stat = "identity")
+  scale_y_continuous(labels = percent_format())
+
+p2<-p+theme(text = element_text(size=15),
+        axis.text.y = element_text(hjust=1)) +labs(y = "Proportion")+
+  labs(x='')
+
+#grid.arrange(p1, p2, nrow=1, ncol=2)
+
+ # using cowplot
+
+  plot_grid(p1, p2, labels = "AUTO",ncol=2,nrow=1)
+
+
+@
+\newpage
+\section{Figure 2D}
+<<echo=FALSE, out.width='0.6\\linewidth', fig.align='center', comment=NA, warning=FALSE>>=
+
+#setwd('e:/hubiC/temp/mut.analysis/allefreq raw clonality/AF with coverage from shilin/new analysis/test2')
+
+#setwd('C:/users/qianj/hubiC/temp/mut.analysis/allefreq raw clonality/AF with coverage from shilin/new analysis/test2')
+
+s2 = system.file("data", 'last.af.cov4.con2.v5.RData', package = "luadtarget")
+
+load(s2)
+
+#load('last.af.cov4.con2.v5.RData')
+
+library(ggridges)
+
+infotest<-info2
+#table(infotest$his)
+ais<-infotest[infotest$his%in%c('p.ais'),]
+mia<-infotest[infotest$his%in%c('MIA'),]
+adc<-infotest[info2$his%in%c('t.ADC'),]
+
+test0<-af.cov4.con2.v5
+test0$Tumor_Sample_Barcode<-test0$Tumor_Sample_Barcode.3
+test<-test0
+t.ais<-test[test$Tumor_Sample_Barcode%in%ais$sample,]
+#dim(t.ais)
+t.ais$his<-c('AIS')
+#length(unique(t.ais$Tumor_Sample_Barcode))
+#length(unique(t.ais$Hugo_Symbol))
+t.mia<-test[test$Tumor_Sample_Barcode%in%mia$sample,]
+#dim(t.mia)
+t.mia$his<-c('MIA')
+#length(unique(t.mia$Tumor_Sample_Barcode))
+#length(unique(t.mia$Hugo_Symbol))
+t.adc<-test[test$Tumor_Sample_Barcode%in%adc$sample,]
+#dim(t.adc)
+t.adc$his<-c('t.ADC')
+
+test<-rbind(t.ais,t.mia,t.adc)
+#dim(test)
+#table(test$his)
+#fivenum(test$t.AF)
+
+p <- ggplot(test, aes(x=t.AF,color=his))+geom_density(alpha=0.8,size=1.5)
+# use this one for matched color in the paper
+p+scale_color_manual(values=c("skyblue", "pink1", "mediumorchid")) +
+theme(text = element_text(size=20),panel.background = element_rect(fill = "white"))
+
+
+@
+\newpage
+\section{Figure 2E}
+
+<<echo=FALSE, out.width='0.6\\linewidth',fig.align='center', comment=NA, warning=FALSE>>=
+
+test<-info2.heidi
+
+d1<-tapply(test$num.mono, test$Histology, FUN=sum,na.rm=TRUE)
+d2<-tapply(test$num.multi, test$Histology, FUN=sum,na.rm=TRUE)
+d1<-data.frame(d1)
+d2<-data.frame(d2)
+d12<-cbind(d1,d2)
+#dim(d12)
+#View(d12)
+colnames(d12)<-c('Clonal','Subclonal')
+d12<-t(d12)
+d12<-d12[,c(2,3,1)]
+
+
+#library(reshape2)
+datm<-melt(d12)
+#library(scales)
+p<-ggplot(datm,aes(x = Var2, y = value,fill = Var1)) +
+  geom_bar(position = "fill",stat = "identity") +
+   scale_fill_manual(values=c("grey","black"))+
+  # or:
+  # geom_bar(position = position_fill(), stat = "identity")
+  scale_y_continuous(labels = percent_format())
+
+ p+theme(text = element_text(size=15),
+        axis.text.y = element_text(hjust=1)) +labs(y = "Proportion")+
+ labs(x='')
+
+
+ # same analysis for prop of clonal and subclonal
+
+ # using prop.test
+
+ test$g1<-test$num.multi
+test$g2<-test$num.mono
+
+test$p.group<-as.character(test$Histology)
+test$p.group[test$p.group %in% c("ADC")] <- "tADC"
+table(test$p.group)
+
+
+d1<-tapply(test$g1, test$p.group, FUN=sum,na.rm=TRUE)
+d2<-tapply(test$g2, test$p.group, FUN=sum,na.rm=TRUE)
+
+dsum<-d1+d2
+prop.test(d1,dsum)
+prop.trend.test(d1,dsum)
+
+# using glm
+
+test$h.order<-ifelse(test$Histology=='AIS',1,ifelse(test$Histology=='MIA',2,3))
+table(test$h.order)
+
+test$h.order<-as.factor(test$h.order)
+
+fit1.glm <- glm(cbind(g1,g2)~h.order, binomial, data=test)  # p value for trend analysis
+
+fit1.glm <- glm(cbind(g1,g2)~p.group, binomial, data=test) # this one seems worked? why?
+summary(fit1.glm)
+anova(fit1.glm, test='Chi')  # this is just same as prop.test(), and prop.trend.test()
+
+# using glm and cluster
+
+
+test11<-test[,c(1,27:29,19)]  # this is for amp and deletion
+#dim(test11)
+#View(test11)
+
+test12 <- melt(test11, id.vars = c("sample","p.group",'mut.signature'))
+# head(test12)
+test13<-test12[!test12$value==0,]
+test13<-test13[!is.na(test13$value),]
+# dim(test13)
+# View(test13)
+
+df<-test13
+
+
+df2 <- df[rep(row.names(df), df$value), 1:4] # is correct format to use for lrm
+# dim(df2)
+#View(df2)
+
+df2$g1<-ifelse(df2$variable=='g1',1,0)
+table(df2$g1)  # now it is ready for lrm
+
+
+mylogit <- lrm(g1~ p.group, data = df2,x=TRUE,y=TRUE)  # got the heidi result
+print(anova(mylogit))  #
+print(mylogit)
+
+# consider cluster effect
+lrm2.rob=robcov(mylogit,cluster=df2$sample)  # too many cluster
+
+lrm2.rob=robcov(mylogit,cluster=df2$mut.signature)  # this one worked very well, using mut.signature as cluster effect
+
+print(anova(lrm2.rob))  # why sometime it worked?
+print(lrm2.rob)
+
+fit1.glm <- glm(g1~p.group, binomial, data=df2)  # same result as using lrm
+summary(fit1.glm)
+
+@
+
+\newpage
+\section{Figure 2F}
+<<echo=FALSE, out.width='0.6\\linewidth', fig.align='center', comment=NA, warning=FALSE>>=
+
+testos$p.group<-testos$kras.sub
+#table(testos$p.group)
+
+testos$p.group[testos$p.group%in% c("yes3")] <- NA
+testos$p.group[testos$p.group%in% c("yes2")] <- NA
+
+testos<-testos[!is.na(testos$p.group),]
+#dim(testos)
+
+objNpsurv <- npsurv(formula = Surv(os.years, dead) ~p.group, conf.int=FALSE ,data = testos)
+
+#survplot(objNpsurv, label.curves=TRUE, col =fabcolors2,lty=1, lwd=3)
+
+# use thi sone first
+plot(objNpsurv, col =1:4, lwd=3, axes=FALSE,mark=3,cex=2,mark.time=TRUE, xlab='Years',ylab='Survival Probability')
+axis(2,col.axis="black", las=2, cex.axis=1.5, tck=-.01,  lwd=3,lwd.ticks = 3)
+axis(1,col.axis="black", las=0, cex.axis=2, tck=-.01,  lwd=3,lwd.ticks = 3)
+
+# p value
+p1<-survdiff(Surv(os.years, dead) ~ p.group, rho=0, data=testos)
+p2<-p1$chisq
+n1<-length(unique(testos$p.group))
+
+p3<-pchisq(p2, df=n1-1, lower.tail=FALSE)
+p3<-round(p3,digits=2)
+
+
+# Add a legend
+legend(1, 0.35, legend=c('NO.KRAS',"Sub.KRAS"),
+       col=1:4, lty=1, lwd=3,cex=1)
+
+text(x=2, y= 0.1, labels=c(paste("P=",p3)))
+
+
+
+@
+\newpage
+\section{Figure 3A}
+<<echo=FALSE, out.width='0.6\\linewidth', fig.align='center', comment=NA, warning=FALSE>>=
+
+testos$p.group<-testos$Histology
+table(testos$p.group)
+
+fabcolors2=c("skyblue", "pink1", "mediumorchid")
+
+#dim(testos)
+
+objNpsurv <- npsurv(formula = Surv(os.years, dead) ~p.group, conf.int=FALSE ,data = testos)
+
+#survplot(objNpsurv, label.curves=TRUE, col =fabcolors2,lty=1, lwd=3)
+
+# use thi sone first
+plot(objNpsurv, col =fabcolors2, lwd=3, axes=FALSE,mark=3,cex=2,mark.time=TRUE, xlab='Years',ylab='Survival Probability')
+axis(2,col.axis="black", las=2, cex.axis=1.5, tck=-.01,  lwd=3,lwd.ticks = 3)
+axis(1,col.axis="black", las=0, cex.axis=2, tck=-.01,  lwd=3,lwd.ticks = 3)
+
+# p value
+p1<-survdiff(Surv(os.years, dead) ~ p.group, rho=0, data=testos)
+p2<-p1$chisq
+n1<-length(unique(testos$p.group))
+
+p3<-pchisq(p2, df=n1-1, lower.tail=FALSE)
+p3<-round(p3,digits=2)
+
+
+# Add a legend
+legend(1, 0.35, legend=c('AIS n=19',"MIA n=27",'ADC n=54'),
+       col=fabcolors2, lty=1, lwd=3,cex=1)
+
+text(x=2, y= 0.1, labels=c(paste("P=",p3)))
+@
+
+\newpage
+\section{Figure 3B}
+<<echo=FALSE, out.width='0.6\\linewidth', fig.align='center', comment=NA, warning=FALSE>>=
+
+testos$p.group<-testos$gene3.sig
+table(testos$p.group)
+
+#fabcolors2=c("skyblue", "pink1", "mediumorchid")
+
+#dim(testos)
+
+objNpsurv <- npsurv(formula = Surv(os.years, dead) ~p.group, conf.int=FALSE ,data = testos)
+
+survplot(objNpsurv, label.curves=TRUE, col =fabcolors2,lty=1, lwd=3)
+
+# use thi sone first
+plot(objNpsurv, lty=1:4, lwd=3, axes=FALSE,mark=3,cex=2,mark.time=TRUE, xlab='Years',ylab='Survival Probability')
+axis(2,col.axis="black", las=2, cex.axis=1.5, tck=-.01,  lwd=3,lwd.ticks = 3)
+axis(1,col.axis="black", las=0, cex.axis=2, tck=-.01,  lwd=3,lwd.ticks = 3)
+
+# p value
+p1<-survdiff(Surv(os.years, dead) ~ p.group, rho=0, data=testos)
+p2<-p1$chisq
+n1<-length(unique(testos$p.group))
+
+p3<-pchisq(p2, df=n1-1, lower.tail=FALSE)
+p3<-round(p3,digits=2)
+
+
+# Add a legend
+legend(1, 0.4, legend=c("EG.KR.TP only n=38",'Other n=32','AT.EP.KM+EG.KR.T n=21','AT.EP.KM only n=9'),
+        lty=1:4, lwd=3,cex=1)
+
+text(x=2, y= 0.1, labels=c(paste("P=",p3)))
+@
+
+\newpage
+\section{Figure 3C}
+
+<<echo=FALSE, fig.width=10, fig.height=5,fig.align='center', comment=NA, warning=FALSE>>=
+
+test<-fig3c.pathway
+#View(test)
+#d12<-melt(test)
+colnames(test)<-c('name','AIS','MIA','ADC')
+
+#library(reshape2)
+datm<-melt(test)
+#View(datm)
+#library(scales)
+
+
+## bar plot with order
+#
+# positions <- datm$name  # get order
+#
+# p<-ggplot(datm, aes(name, value)) + geom_bar(aes(fill = variable),width = 0.4, position = position_dodge(width=0.5),stat = "identity")+
+#   scale_x_discrete(limits = positions)
+
+   p<-ggplot(datm, aes(name, value)) + geom_bar(aes(fill = variable),width = 0.4, position = position_dodge(width=0.5),stat = "identity")
+
+p1<-p+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1)) +labs(y = "-Log10(FDR")+
+  labs(x='')
+
+p2<-p+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=0, hjust=1)) +labs(y = "-Log10(FDR")+
+  labs(x='')
+
+
+p2<-p2 + coord_flip()  # flip the plot
+
+  plot_grid(p1, p2, labels = "AUTO",ncol=2,nrow=1)
+
+
+@
+
+\newpage
+\section{Figure 4B}
+<<echo=FALSE,fig.width=10, fig.height=4, fig.align='center', comment=NA, warning=FALSE>>=
+
+# each group color for his
+#fabcolors = RColorBrewer::brewer.pal(n = 3,name = 'Spectral')
+# uset his one for figure 1b
+fabcolors=c("skyblue", "pink1", "mediumorchid")
+names(fabcolors) = c("AIS", "MIA", "t.ADC")
+#names(fabcolors) = c("AIS", "MIA", "ADC")
+fabcolors = list(Histology = fabcolors)
+
+
+
+# color for varaints
+# use this for ADC project
+# USE THIS one for figure 1b
+col=c("#00F5FF" ,"#0000FF", "#A6CEE3", "#000000", "#FB9A99" ,"#E31A1C" ,"#FDBF6F" ,"orange")
+
+names(col) = c('Frame_Shift_Del','Missense_Mutation', 'Nonsense_Mutation', 'Multi_Hit', 'Frame_Shift_Ins',
+               'In_Frame_Ins', 'Splice_Site', 'In_Frame_Del')
+genex<-fig4b.gene7
+oncoplot(maf = laml.t,colors=col,genes=genex,clinicalFeatures = 'Histology',
+         sortByAnnotation =FALSE, annotationColor = fabcolors,removeNonMutated = FALSE,
+         drawRowBar = FALSE,drawColBar = FALSE,legendFontSize = 10,bgCol = "white")
+
+
+@
+
+
+\end{document}
